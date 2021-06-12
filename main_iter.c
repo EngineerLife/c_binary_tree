@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 typedef struct Element {
     int key;
@@ -47,17 +48,34 @@ Tree insert_element(Tree _tree,Element* _elem) {
 
 /*****************************************************************************/
 void destroy_tree(Tree _tree) {
-    if(_tree) {
-        if(_tree->l) {
-            destroy_tree(_tree->l);
-        }
+    Node* _tree_act = _tree;
+    bool from_left = false;
 
-        if(_tree->r) {
-            destroy_tree(_tree->r);
+    while(_tree_act) {
+        // destroy down left
+        if(_tree_act->l) {
+            from_left = true;
+            _tree_act = _tree_act->l;
         }
-
-        free(_tree);
+        else if(_tree_act->r) {
+            from_left = false;
+            _tree_act = _tree_act->r;
+        }
+        else {
+            Node* parent = _tree_act->p;
+            if(parent) {
+                if(from_left) {
+                    parent->l = NULL;
+                }
+                else {
+                    parent->r = NULL;
+                }
+            }
+            free(_tree_act);
+            _tree_act = parent;
+        }
     }
+    // end here
 }
 
 
